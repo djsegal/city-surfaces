@@ -7,7 +7,7 @@ jobs:
     resources:
       instance-type: C5
     outputs:
-      repository:
+      repo:
         type: volume
     uses: git-checkout@v1
     with:
@@ -18,29 +18,8 @@ jobs:
     needs:
       - GetApex
     inputs:
-      repository: GetApex.outputs.repository
+      repo: GetApex.outputs.repo
     uses: script@v1
     with:
-      script: python /inputs/repository/setup.py install --cuda_ext --cpp_ext
-      image: djsegal/city-surfaces:latest
-  CloneRepo:
-    resources:
-      instance-type: C5
-    outputs:
-      repo:
-        type: volume
-    uses: git-checkout@v1
-    with:
-      url: context.event.github.url
-  HelloWorld:
-    resources:
-      instance-type: C5
-    needs:
-      - SetupApex
-      - CloneRepo
-    inputs:
-      repo: CloneRepo.outputs.repo
-    uses: script@v1
-    with:
-      script: python /inputs/repo/hello.py
+      script: python /inputs/repo/setup.py install --cuda_ext --cpp_ext
       image: djsegal/city-surfaces:latest
