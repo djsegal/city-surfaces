@@ -3,6 +3,26 @@
     branches:
       only: main
 jobs:
+  GetApex:
+    resources:
+      instance-type: C5
+    outputs:
+      repository:
+        type: volume
+    uses: git-checkout@v1
+    with:
+      url: 'https://github.com/NVIDIA/apex.git'
+  SetupApex:
+    resources:
+      instance-type: C5
+    needs:
+      - GetApex
+    inputs:
+      repository: GetApex.outputs.repository
+    uses: script@v1
+    with:
+      script: python /inputs/repository/setup.py install --cuda_ext --cpp_ext
+      image: djsegal/city-surfaces:latest
   CloneRepo:
     resources:
       instance-type: C5
@@ -16,10 +36,11 @@ jobs:
     resources:
       instance-type: C5
     needs:
+      - SetupApex
       - CloneRepo
     inputs:
       repo: CloneRepo.outputs.repo
     uses: script@v1
     with:
-      script: cd /home/ && git clone https://github.com/NVIDIA/apex.git apex && cd apex && python setup.py install --cuda_ext --cpp_ext && python /inputs/repo/hello.py
+      script: python /inputs/repo/hello.py
       image: djsegal/city-surfaces:latest
