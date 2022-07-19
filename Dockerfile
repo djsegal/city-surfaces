@@ -16,3 +16,5 @@ RUN pip install --no-cache-dir nose
 RUN pip install --no-cache-dir ninja
 
 RUN apt-get update && apt-get install libgtk2.0-dev -y && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /home/
